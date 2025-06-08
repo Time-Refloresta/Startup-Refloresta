@@ -1,4 +1,6 @@
-🌱 Reflore$ta
+## 🌱 Reflore$ta
+
+
 Bem-vindo ao repositório da Reflore$ta, uma startup que acredita que investir no futuro do planeta pode – e deve – ser simples, acessível e recompensador.
 
 🌍 Quem somos?
@@ -18,6 +20,9 @@ Cada cota representa uma árvore plantada em áreas estratégicas do território
 Acompanhe o impacto real do seu investimento direto pelo aplicativo.
 
 Tudo de forma transparente, rastreável e com atualizações sobre as áreas reflorestadas.
+
+## Funcionamento:
+![Funcionamento App Reflore$ta](https://github.com/user-attachments/assets/4e574923-9cbd-4eba-be1d-d043a65b2367)
 
 💚 Por que fazer parte?
 Você ajuda a combater a crise climática.
