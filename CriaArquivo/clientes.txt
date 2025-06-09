@@ -1,0 +1,12 @@
+Nome         Email                               ID       Senha  Valor      Cotas  Brinde              
+Henrique     henrique@gmail.com                  11       2244   10000.00   200    Boto-Cor-de-Rosa    
+Henrique     henrique@gmail.com                  11       2244   0.00       0      -                   
+Pedro        pedro@gmail.com                     22       9090   5000.00    100    Macaco-Aranha       
+Pedro        pedro@gmail.com                     22       9090   0.00       0      -                   
+Joao         joao@gmail.com                      24       8787   2000.00    40     Pirarucu            
+Joao         joao@gmail.com                      24       8787   0.00       0      -                   
+Higor        higor@gmail.com                     18       5041   4500.00    90     Lobo-Guará          
+Higor        higor@gmail.com                     18       5041   0.00       0      -                   
+Joana        joana@gmail.com                     87       1234   0.00       0      -                   
+Joana        joana@gmail.com                     87       1234   500.00     10     Macaco-Aranha       
+Joana        joana@gmail.com                     87       1234   0.00       0      -                   
