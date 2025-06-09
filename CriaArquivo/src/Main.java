@@ -5,8 +5,8 @@ import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 public class Main {
-    private static Formatter arqSaida; // para escrever no arquivo
-    private static Scanner arqEnt;      // para ler do arquivo
+    private static Formatter arqSaida; 
+    private static Scanner arqEnt;      
 
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
@@ -123,14 +123,14 @@ public class Main {
         }
 
         if (cadastro == 1) {
-            // autenticar usuário existente
+           
             System.out.print("Digite seu ID de usuário: ");
             id = input.nextInt();
             System.out.print("Digite sua senha: ");
             senha = input.nextInt();
 
             try (Scanner leitor = new Scanner(new File("clientes.txt"))) {
-                leitor.nextLine(); // pula cabeçalho
+                leitor.nextLine(); 
                 while (leitor.hasNext()) {
                     String n = leitor.next();
                     String e = leitor.next();
@@ -162,12 +162,12 @@ public class Main {
             double aporte = input.nextDouble();
             cotas = (int) (aporte / 50);
             valor = antigoValor + aporte;
-            antigasCotas = antigasCotas; // corrige typo
+            antigasCotas = antigasCotas; 
             cotas += antigasCotas;
             brindeGanho = brindes[(int) (Math.random() * brindes.length)];
 
         } else {
-            // novo cadastro
+            
             System.out.print("Digite o primeiro nome: ");
             nome = input.next();
             System.out.print("Digite o e-mail: ");
@@ -192,7 +192,7 @@ public class Main {
             }
         }
 
-        // grava registro (novo ou acumulado)
+      
         arqSaida.format(
                 "%-12s %-35s %-8d %-6d %-10.2f %-6d %-20s%n",
                 nome, email, id, senha, valor, cotas, brindeGanho
@@ -261,7 +261,7 @@ public class Main {
                         ? "Brinde Resgatado! Muito obrigado!!!"
                         : "Fique à vontade para resgatar quando desejar.");
 
-                // grava registro zerado
+                
                 arqSaida.format(
                         "%-12s %-35s %-8d %-6d %-10.2f %-6d %-20s%n",
                         nome, email, idUsuario, senha2, 0.0, 0, "-"
