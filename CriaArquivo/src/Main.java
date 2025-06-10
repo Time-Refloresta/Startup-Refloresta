@@ -5,8 +5,8 @@ import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 public class Main {
-    private static Formatter arqSaida; 
-    private static Scanner arqEnt;      
+    private static Formatter arqSaida;
+    private static Scanner arqEnt;
 
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
@@ -14,64 +14,124 @@ public class Main {
         boolean programaAtivo = true;
 
         abreArqEscrita();
-        escreverCabecalho();
+        arqSaida.format("%-12s %-35s %-8s %-6s %-10s %-6s %-20s%n",
+                "Nome", "Email", "ID", "Senha", "Valor", "Cotas", "Brinde");
+        arqSaida.flush();
 
         while (programaAtivo) {
-            exibirMenu();
+            System.out.println("\n--- Menu Inicial ---");
+            System.out.println("1 - Cadastrar novo usuário ou investir");
+            System.out.println("2 - Fazer login");
+            System.out.println("0 - Sair");
+            System.out.print("Escolha: ");
             escolha = sc.nextInt();
 
-            switch (escolha) {
-                case 1:
-                    adicionaRegistro();
-                    break;
-                case 2:
-                    realizarLogin();
-                    break;
-                case 0:
-                    fecharESalvar();
-                    programaAtivo = false;
-                    System.out.println("Obrigado.");
-                    break;
-                default:
-                    System.out.println("Opção inválida. Tente de novo.");
+            if (escolha == 1) {
+                adicionaRegistro();
+            } else if (escolha == 2) {
+                int idUsuario, senha2;
+                boolean loginRealizado = false;
+                String nome = "", email = "", brinde = "-";
+                double valor = 0;
+                int cotas = 0;
+
+                System.out.print("Digite seu ID: ");
+                idUsuario = sc.nextInt();
+                System.out.print("Digite sua senha: ");
+                senha2 = sc.nextInt();
+
+                boolean erroNaLeitura = false;
+                try (Scanner leitor = new Scanner(new File("clientes.txt"))) {
+                    if (leitor.hasNextLine()) leitor.nextLine(); // pula cabeçalho
+                    while (leitor.hasNext()) {
+                        String n = leitor.next();
+                        String e = leitor.next();
+                        int idArq = leitor.nextInt();
+                        int sArq = leitor.nextInt();
+                        double vArq = leitor.nextDouble();
+                        int cArq = leitor.nextInt();
+                        String bArq = leitor.next();
+
+                        if (idUsuario == idArq && senha2 == sArq) {
+                            loginRealizado = true;
+                            nome = n;
+                            email = e;
+                            valor = vArq;
+                            cotas = cArq;
+                            brinde = bArq;
+                        }
+                    }
+                } catch (Exception e) {
+                    System.out.println("Erro ao acessar arquivo.");
+                    erroNaLeitura = true;
+                }
+
+                if (!erroNaLeitura) {
+                    if (!loginRealizado) {
+                        System.out.println("ID ou senha incorretos.");
+                    } else {
+                        System.out.println("Login realizado com sucesso! Bem-vindo, " + nome);
+                        System.out.printf("Saldo: R$ %.2f | Cotas: %d | Brinde: %s%n", valor, cotas, brinde);
+
+                        if (valor > 0) {
+                            System.out.println("Cada cota equivale a uma árvore plantada.");
+                            System.out.print("Deseja plantar agora? (1-Sim / 2-Não): ");
+                            int plantar = sc.nextInt();
+                            if (plantar == 1) {
+                                System.out.println("Sucesso! " + cotas + " árvores foram plantadas.");
+                                valor = 0.0;
+                                cotas = 0;
+                            }
+                            else {
+                                System.out.println("Tudo bem! Você pode plantar depois.");
+                            }
+                            arqSaida.format("%-12s %-35s %-8d %-6d %-10.2f %-6d %-20s%n",
+                                    nome, email, idUsuario, senha2, valor, cotas, brinde);
+                            arqSaida.flush();
+                        }
+                        else {
+                            System.out.println("Você ainda não possui investimento.");
+                        }
+                        if(!brinde.equals("-")) {
+                            System.out.print("Deseja resgatar seu brinde agora? (1-Sim / 2-Não): ");
+                            int resgatar = sc.nextInt();
+                            while (resgatar != 1 && resgatar != 2) {
+                                System.out.print("Opção inválida. Digite 1 ou 2: ");
+                                resgatar = sc.nextInt();
+                            }
+                            if (resgatar == 1) {
+                                System.out.println("Brinde resgatado. Obrigado!");
+                                brinde = "-";
+                                arqSaida.format("%-12s %-35s %-8d %-6d %-10.2f %-6d %-20s%n",
+                                        nome, email, idUsuario, senha2, valor, cotas, brinde);
+                                arqSaida.flush();
+                            } else {
+                                System.out.println("Você pode resgatar quando quiser.");
+                            }
+                        }
+                    }
+                }
+
+            } else if (escolha == 0) {
+                fechaArqEsc();
+                abreArqLeitura();
+                leRegistro();
+                fechaArqLeit();
+                programaAtivo = false;
+                System.out.println("Obrigado.");
+            } else {
+                System.out.println("Opção inválida.");
             }
         }
 
         sc.close();
     }
 
-    private static void exibirMenu() {
-        System.out.println("\n--- Menu Inicial ---");
-        System.out.println("1 - Cadastrar novo usuário ou investir");
-        System.out.println("2 - Fazer login");
-        System.out.println("0 - Sair");
-        System.out.print("Escolha: ");
-    }
-
-    private static void escreverCabecalho() {
-        arqSaida.format(
-                "%-12s %-35s %-8s %-6s %-10s %-6s %-20s%n",
-                "Nome", "Email", "ID", "Senha", "Valor", "Cotas", "Brinde"
-        );
-        arqSaida.flush();
-    }
-
-    private static void fecharESalvar() {
-        fechaArqEsc();
-        abreArqLeitura();
-        leRegistro();
-        fechaArqLeit();
-    }
-
-    private static void abrirArquivoEscrita() throws FileNotFoundException, SecurityException {
-        arqSaida = new Formatter("clientes.txt");
-    }
-
     public static void abreArqEscrita() {
         try {
-            abrirArquivoEscrita();
-        } catch (Exception e) {
-            System.err.println("Erro ao abrir o arquivo para escrita. Encerrando...");
+            arqSaida = new Formatter("clientes.txt");
+        } catch (FileNotFoundException | SecurityException e) {
+            System.err.println("Erro ao abrir o arquivo para escrita.");
             System.exit(1);
         }
     }
@@ -80,39 +140,24 @@ public class Main {
         try {
             arqEnt = new Scanner(new File("clientes.txt"));
         } catch (FileNotFoundException e) {
-            System.err.println("Erro na abertura do arquivo para leitura.");
+            System.err.println("Erro ao abrir o arquivo para leitura.");
             System.exit(1);
         }
     }
-
-    public static void fechaArqEsc() {
-        if (arqSaida != null) {
-            arqSaida.close();
-        }
-    }
-
-    public static void fechaArqLeit() {
-        if (arqEnt != null) {
-            arqEnt.close();
-        }
-    }
-
     public static void adicionaRegistro() {
         Scanner input = new Scanner(System.in);
-        String nome = "", email = "";
-        String brindeGanho = "-";
-        int id = 0, senha = 0;
+        String nome = "", email = "", brindeGanho = "-";
+        int id = 0, senha = 0, cadastro, investimento;
         double valor = 0;
         int cotas = 0;
-        int cadastro;
         boolean usuarioEncontrado = false;
         double antigoValor = 0;
         int antigasCotas = 0;
 
         String[] brindes = {
-                "Onca-Pintada","Macaco-Aranha","Boto-Cor-de-Rosa",
-                "Mico-Leao-Dourado","Ararajuba","Capivara",
-                "Jacaré-Açu","Lobo-Guará","Sucuri","Pirarucu"
+                "Onca-Pintada", "Macaco-Aranha", "Boto-Cor-de-Rosa",
+                "Mico-Leao-Dourado", "Ararajuba", "Capivara",
+                "Jacaré-Açu", "Lobo-Guará", "Sucuri", "Pirarucu"
         };
 
         System.out.print("Já realizou o cadastro? (1-Sim / 2-Não): ");
@@ -123,14 +168,14 @@ public class Main {
         }
 
         if (cadastro == 1) {
-           
             System.out.print("Digite seu ID de usuário: ");
             id = input.nextInt();
             System.out.print("Digite sua senha: ");
             senha = input.nextInt();
 
+            boolean erroNaLeitura = false;
             try (Scanner leitor = new Scanner(new File("clientes.txt"))) {
-                leitor.nextLine(); 
+                if (leitor.hasNextLine()) leitor.nextLine(); 
                 while (leitor.hasNext()) {
                     String n = leitor.next();
                     String e = leitor.next();
@@ -150,24 +195,27 @@ public class Main {
                 }
             } catch (Exception e) {
                 System.out.println("Erro ao acessar arquivo de usuários.");
-                return;
+                erroNaLeitura = true;
             }
 
-            if (!usuarioEncontrado) {
-                System.out.println("ID ou senha inválidos. Cadastro não localizado.");
-                return;
+            if (!erroNaLeitura) {
+                if (!usuarioEncontrado) {
+                    System.out.println("ID ou senha inválidos.");
+                } else {
+                    System.out.print("Quanto deseja investir? R$ ");
+                    double aporte = input.nextDouble();
+                    cotas = (int) (aporte / 50);
+                    valor = antigoValor + aporte;
+                    cotas += antigasCotas;
+                    brindeGanho = brindes[(int) (Math.random() * brindes.length)];
+
+                    arqSaida.format("%-12s %-35s %-8d %-6d %-10.2f %-6d %-20s%n",
+                            nome, email, id, senha, valor, cotas, brindeGanho);
+                    arqSaida.flush();
+                }
             }
 
-            System.out.print("Quanto deseja investir? R$ ");
-            double aporte = input.nextDouble();
-            cotas = (int) (aporte / 50);
-            valor = antigoValor + aporte;
-            antigasCotas = antigasCotas; 
-            cotas += antigasCotas;
-            brindeGanho = brindes[(int) (Math.random() * brindes.length)];
-
-        } else {
-            
+        } else {  // cadastro novo
             System.out.print("Digite o primeiro nome: ");
             nome = input.next();
             System.out.print("Digite o e-mail: ");
@@ -177,12 +225,13 @@ public class Main {
             System.out.print("Digite a senha: ");
             senha = input.nextInt();
             System.out.print("Deseja investir agora? (1-Sim / 2-Não): ");
-            int inv = input.nextInt();
-            while (inv != 1 && inv != 2) {
+            investimento = input.nextInt();
+            while (investimento != 1 && investimento != 2) {
                 System.out.print("Opção inválida. Digite 1 ou 2: ");
-                inv = input.nextInt();
+                investimento = input.nextInt();
             }
-            if (inv == 1) {
+
+            if (investimento == 1) {
                 System.out.print("Quanto deseja investir? R$ ");
                 valor = input.nextDouble();
                 cotas = (int) (valor / 50);
@@ -190,97 +239,17 @@ public class Main {
             } else {
                 System.out.println("Cadastro realizado sem investimento.");
             }
-        }
 
-      
-        arqSaida.format(
-                "%-12s %-35s %-8d %-6d %-10.2f %-6d %-20s%n",
-                nome, email, id, senha, valor, cotas, brindeGanho
-        );
-        arqSaida.flush();
-    }
-
-    public static void realizarLogin() {
-        Scanner sc = new Scanner(System.in);
-        System.out.print("Digite seu id de usuário: ");
-        int idUsuario = sc.nextInt();
-        System.out.print("Digite sua senha: ");
-        int senha2 = sc.nextInt();
-
-        boolean loginRealizado = false;
-        String nome = "", email = "", brinde = "-";
-        double valor = 0;
-        int cotas = 0;
-
-        try (Scanner leitor = new Scanner(new File("clientes.txt"))) {
-            leitor.nextLine();
-            while (leitor.hasNext()) {
-                String n = leitor.next();
-                String e = leitor.next();
-                int idArq = leitor.nextInt();
-                int sArq = leitor.nextInt();
-                double vArq = leitor.nextDouble();
-                int cArq = leitor.nextInt();
-                String bArq = leitor.next();
-
-                if (idUsuario == idArq && senha2 == sArq) {
-                    loginRealizado = true;
-                    nome = n;
-                    email = e;
-                    valor = vArq;
-                    cotas = cArq;
-                    brinde = bArq;
-                }
-            }
-        } catch (Exception ex) {
-            System.out.println("Arquivo de usuários não encontrado.");
-            return;
-        }
-
-        if (!loginRealizado) {
-            System.out.println("ID ou senha incorretos. Tente novamente.");
-            return;
-        }
-
-        System.out.println("\nLogin realizado com sucesso! Bem-vindo, " + nome);
-        System.out.printf("Seu saldo atual: R$ %.2f e %d cotas (brinde: %s)%n", valor, cotas, brinde);
-
-        if (valor > 0) {
-            System.out.println("Cada cota equivale a uma árvore plantada.");
-            System.out.print("Deseja plantar agora? (1-Sim / 2-Não): ");
-            int plantar = sc.nextInt();
-            if (plantar == 1) {
-                System.out.println("Sucesso! " + cotas + " árvores foram plantadas.");
-                System.out.print("Deseja resgatar agora o seu brinde? (1-Sim / 2-Não): ");
-                int resgate = sc.nextInt();
-                while (resgate != 1 && resgate != 2) {
-                    System.out.print("Opção inválida. Digite 1 ou 2: ");
-                    resgate = sc.nextInt();
-                }
-                System.out.println(resgate == 1
-                        ? "Brinde Resgatado! Muito obrigado!!!"
-                        : "Fique à vontade para resgatar quando desejar.");
-
-                
-                arqSaida.format(
-                        "%-12s %-35s %-8d %-6d %-10.2f %-6d %-20s%n",
-                        nome, email, idUsuario, senha2, 0.0, 0, "-"
-                );
-                arqSaida.flush();
-            } else {
-                System.out.println("Tudo bem! Você poderá plantar quando quiser.");
-            }
-        } else {
-            System.out.println("Você ainda não tem investimento. Faça um aporte!");
+            arqSaida.format("%-12s %-35s %-8d %-6d %-10.2f %-6d %-20s%n",
+                    nome, email, id, senha, valor, cotas, brindeGanho);
+            arqSaida.flush();
         }
     }
-
     public static void leRegistro() {
         System.out.printf("\n%-12s %-35s %-8s %-6s %-10s %-6s %-20s%n",
-                "Nome", "Email", "ID", "Senha", "Valor", "Cotas", "Brinde"
-        );
+                "Nome", "Email", "ID", "Senha", "Valor", "Cotas", "Brinde");
         try {
-            if (arqEnt.hasNextLine()) arqEnt.nextLine();
+            if (arqEnt.hasNextLine()) arqEnt.nextLine(); 
             while (arqEnt.hasNext()) {
                 String nome = arqEnt.next();
                 String email = arqEnt.next();
@@ -290,14 +259,23 @@ public class Main {
                 int cotas = arqEnt.nextInt();
                 String brinde = arqEnt.next();
 
-                System.out.printf(
-                        "%-12s %-35s %-8d %-6d %-10.2f %-6d %-20s%n",
-                        nome, email, id, senha, valor, cotas, brinde
-                );
+                System.out.printf("%-12s %-35s %-8d %-6d %-10.2f %-6d %-20s%n",
+                        nome, email, id, senha, valor, cotas, brinde);
             }
         } catch (NoSuchElementException | IllegalStateException e) {
-            System.err.println("Erro na leitura do arquivo");
+            System.err.println("Erro na leitura do arquivo.");
             System.exit(1);
+        }
+    }
+    public static void fechaArqEsc() {
+        if (arqSaida != null) {
+            arqSaida.close();
+        }
+    }
+
+    public static void fechaArqLeit() {
+        if (arqEnt != null) {
+            arqEnt.close();
         }
     }
 }
