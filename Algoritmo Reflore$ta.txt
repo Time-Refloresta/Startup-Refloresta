@@ -1,0 +1,184 @@
+Algoritmo Reflore$ta {
+	String nomes[100];
+	String emails[100];
+	int ids[100];
+	int senhas[100];
+	double valores[100];
+	int cotas[100];
+	String brindes[100];
+	String listaBrindes[] = {"Onca-Pintada", "Macaco-Aranha", "Boto-Cor-de-Rosa", "Mico-Leao-Dourado", "Ararajuba", "Capivara", "Jacaré-Açu", "Lobo-Guará", "Sucuri", "Pirarucu"};
+	int totalUsuarios = 0;
+	boolean programaAtivo = true;
+	int escolha;
+	int cadastro;
+	int investimento;
+	double valorInvestido;
+	int idUsuario;
+	int senha2;
+	int plantar;
+	int resgate;
+
+	while (programaAtivo) {
+		escreva("\n--- Menu Inicial ---");
+		escreva("1 - Cadastrar novo usuário ou investir");
+		escreva("2 - Fazer login");
+		escreva("0 - Sair");
+		escreva("Escolha: ");
+		leia(escolha);
+
+		if (escolha == 1) {
+			escreva("Já realizou o cadastro? (1 - sim, 2 - não)");
+			leia(cadastro);
+			while (cadastro != 1 && cadastro != 2) {
+				escreva("Erro, opção inválida.");
+				leia(cadastro);
+			}
+			int idDigitado;
+			boolean usuarioExiste = false;
+			int indiceUsuario = -1;
+			if (cadastro == 1) {
+				escreva("Digite o ID de usuário:");
+				leia(idDigitado);
+				for (int i = 0; i < totalUsuarios; i++) {
+					if (ids[i] == idDigitado) {
+						usuarioExiste = true;
+						indiceUsuario = i;
+					}
+				}
+
+				if (usuarioExiste) {
+					escreva("Usuário já cadastrado. Prosseguindo para investimento...");
+				} else {
+					ids[totalUsuarios] = idDigitado;
+
+					escreva("Digite o primeiro nome:");
+					leia(nomes[totalUsuarios]);
+
+					escreva("Digite o e-mail:");
+					leia(emails[totalUsuarios]);
+
+					escreva("Digite a senha:");
+					leia(senhas[totalUsuarios]);
+
+					brindes[totalUsuarios] = "";
+					valores[totalUsuarios] = 0;
+					cotas[totalUsuarios] = 0;
+
+					indiceUsuario = totalUsuarios;
+					totalUsuarios++;
+				}
+			} else {
+				escreva("Digite o primeiro nome:");
+				leia(nomes[totalUsuarios]);
+
+				escreva("Digite o e-mail:");
+				leia(emails[totalUsuarios]);
+
+				escreva("Digite o ID de usuário:");
+				leia(ids[totalUsuarios]);
+
+				escreva("Digite a senha:");
+				leia(senhas[totalUsuarios]);
+
+				brindes[totalUsuarios] = "";
+				valores[totalUsuarios] = 0;
+				cotas[totalUsuarios] = 0;
+
+				indiceUsuario = totalUsuarios;
+				totalUsuarios++;
+			}
+			escreva("Deseja investir? (1 - sim, 2 - não)");
+			leia(investimento);
+			while (investimento != 1 && investimento != 2) {
+				escreva("Erro, opção inválida.");
+				leia(investimento);
+			}
+
+			if (investimento == 1) {
+				escreva("Quanto deseja investir:");
+				leia(valorInvestido);
+				valores[indiceUsuario] += valorInvestido;
+				int novasCotas = (int)(valorInvestido / 50);
+				cotas[indiceUsuario] += novasCotas;
+
+				int sorteio = (int)(Math.random() * listaBrindes.length);
+				String novoBrinde = listaBrindes[sorteio];
+
+				if (brindes[indiceUsuario] == "") {
+					brindes[indiceUsuario] = novoBrinde;
+				} else {
+					brindes[indiceUsuario] += ", " + novoBrinde;
+				}
+
+				escreva("Você receberá " + novasCotas + " novas cotas.");
+				escreva("Total de cotas acumuladas: " + cotas[indiceUsuario]);
+				escreva("Parabéns! Você ganhou um brinde: " + novoBrinde);
+			} else {
+				escreva("Obrigado pelo cadastro, nos ajude quando puder.");
+			}
+
+		} else if (escolha == 2) {
+			escreva("Digite seu id de usuario para realizar o login:");
+			leia(idUsuario);
+			escreva("Digite sua senha para realizar o login:");
+			leia(senha2);
+
+			boolean loginRealizado = false;
+			int indiceLogin = -1;
+
+			for (int i = 0; i < totalUsuarios; i++) {
+				if (ids[i] == idUsuario && senhas[i] == senha2) {
+					loginRealizado = true;
+					indiceLogin = i;
+				}
+			}
+
+			if (loginRealizado) {
+				escreva("Login realizado com sucesso: " + nomes[indiceLogin] + ", seja bem-vindo!");
+				escreva("Você investiu R$" + valores[indiceLogin] + " e possui " + cotas[indiceLogin] + " cotas.");
+				if (valores[indiceLogin] > 0) {
+					escreva("Você recebeu os seguintes brindes: " + brindes[indiceLogin]);
+					escreva("Cada cota é uma árvore plantada.");
+					escreva("Deseja plantar agora? 1 para sim, 2 para não:");
+					leia(plantar);
+					if (plantar == 1) {
+						escreva("Sucesso, " + cotas[indiceLogin] + " árvores foram plantadas.");
+						escreva("Obrigado por nos ajudar a salvar o mundo.");
+						valores[indiceLogin] = 0;
+						cotas[indiceLogin] = 0;
+						escreva("Deseja resgatar agora o seu brinde?(1 - sim, 2 - não)");
+						leia(resgate);
+						while (resgate != 1 && resgate != 2) {
+							escreva("Erro, opção inválida");
+							leia(resgate);
+						}
+						if (resgate == 1) {
+							escreva("Brindes Resgatados, Muito Obrigado!!!");
+							brindes[indiceLogin] = "";
+						} else {
+							escreva("Fique à vontade para resgatar quando puder");
+						}
+					} else {
+						escreva("Fique à vontade para plantar quando desejar.");
+					}
+				} else {
+					escreva("Realize seu investimento");
+				}
+			} else {
+				escreva("ID ou senha incorretos. Tente novamente.");
+			}
+
+		} else if (escolha == 0) {
+			escreva("%-12s %-35s %-8s %-6s %-10s %-6s %-20s\n",
+					"Nome", "Email", "ID", "Senha", "Valor", "Cotas", "Brinde");
+			for (int i = 0; i < totalUsuarios; i++) {
+				escreva("%-12s %-35s %-8d %-6d %-10.2f %-6d %-20s\n",
+						nomes[i], emails[i], ids[i], senhas[i], valores[i], cotas[i], brindes[i]);
+			}
+			programaAtivo = false;
+			escreva("Obrigado.");
+		} else {
+			escreva("Opção inválida.");
+		}
+	}
+}
